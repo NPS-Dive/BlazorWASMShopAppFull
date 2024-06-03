@@ -1,0 +1,31 @@
+﻿@page "/"
+
+@inject IProductService ProductService
+ 
+<PageTitle>List of Products</PageTitle>     
+<HeadContent>
+    <meta name="description" content="Products List"/>
+</HeadContent>
+
+@if (ProductsList?.Any() ?? false)
+    {
+             <h2>Latest Products</h2>
+    <div class="row">
+        @foreach (var stuff in ProductsList)
+            {
+             <ProductItemComponent Product="stuff"></ProductItemComponent>
+            }
+    </div>
+    }
+@code {
+    public IList<ProductModel>? ProductsList { get; set; }
+}   
+
+@functions
+{
+    protected override void OnInitialized ()
+    {
+        ProductsList = ProductService.GetAllProducts();
+        base.OnInitialized();
+    }
+}

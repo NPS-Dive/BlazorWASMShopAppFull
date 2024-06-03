@@ -1,0 +1,152 @@
+﻿@page "/product/{slug}"
+
+@inject IProductService ProductService
+@inject ICartService CartService
+
+@if (Product != null)
+    {
+    <PageTitle>@Product.ProductName</PageTitle>
+    <HeadContent>
+        <meta name="description" content="@Product.ProductName" />
+    </HeadContent>
+    }
+
+
+
+@if (Product == null)
+    {
+    <div class="alert alert-warning">
+        <h2>Unfortunately, the Product is not Found!</h2>
+    </div>
+    }
+else
+    {
+    //show product
+    <div class="row">
+        <div class="col-3">
+            <img class=" rounded img-thumbnail" src="/images/@Product.ProductImage" style="width=100%" />
+        </div>
+        <div class="col-9">
+            <h3>@Product.ProductName</h3>
+            <hr />
+
+            <p><strong>Category: </strong>@Product.ProductCategory</p>
+            <p><strong>Price: </strong>@Product.ProductPrice $</p>
+            <div class="row m-3">
+                @if (CartService.Count() > 0)
+                    {
+                    <p>Entities in Your Shopping Cart: @CartService.Count()</p>
+                    }
+
+
+                <EditForm Model="_productAddToCartModel" OnValidSubmit="AddToCart">
+                    <div class="col-md-3">
+                        <DataAnnotationsValidator />
+                        <ValidationMessage For="() => _productAddToCartModel.Quantity" />
+                        <InputNumber @bind-Value="_productAddToCartModel.Quantity" class="form-control" placeholder="How many?..." />
+                    </div>
+                    <div class="col-md-3">
+                            <button type="button" class="btn btn-outline-success">
+                                @if (CartService.HasProduct(Product.SKU))
+                                    {
+                                    <span>
+                                        Add
+                                        @if (_productAddToCartModel.Quantity.HasValue)
+                                            {
+                                            <text> @_productAddToCartModel.Quantity </text>
+                                            }
+                                        else
+                                            {
+                                            <text>1</text>
+                                            }
+                                        more @Product.ProductName to Cart
+                                    </span>
+                                    }
+                                else
+                                    {
+                                    <span>
+                                        Add to Cart
+                                    </span>
+                                    }
+                            </button>
+                        </div>
+                    
+                </EditForm>
+
+
+            </div>
+            <p>
+                <strong>Description:</strong><br />
+                @Product.ProductDescription
+            </p>
+            <ul>
+                @foreach (var product in ProductList)
+                    {
+                    <li>
+                        <a href="@product.FullUrl">
+                            @product.ProductName
+                        </a>
+                    </li>
+
+                    }
+            </ul>
+        </div>
+    </div>
+    }
+
+
+
+@if (ProductList != null)
+    {
+    <div class="row">
+        <h2> <strong>Other products:</strong></h2>
+
+        @foreach (var stuff in ProductList)
+            {
+            <ProductItemComponent Product="stuff"></ProductItemComponent>
+            }
+
+    </div>
+    }
+
+@code {
+    [Parameter]
+    public string? slug { get; set; }
+
+    public ProductModel? Product { get; set; }
+    public IList<ProductModel>? ProductList { get; set; }
+
+    ProductAddToCartModel _productAddToCartModel = new ProductAddToCartModel();
+
+}
+
+@functions
+{
+    protected override void OnInitialized ()
+        {
+        ProductList = ProductService.GetAllProducts();
+        if (!string.IsNullOrEmpty(slug))
+            {
+            Product = ProductService.GetProductBySlug(slug);
+            }
+        base.OnInitialized();
+        }
+
+    protected override void OnParametersSet ()
+        {
+        if (!string.IsNullOrEmpty(slug))
+            {
+            Product = ProductService.GetProductBySlug(slug);
+            }
+        base.OnParametersSet();
+        }
+
+    public void AddToCart ()
+        {
+        if (Product != null)
+            {
+            CartService.AddProduct(Product, _productAddToCartModel.Quantity ?? 1);
+            _productAddToCartModel.Quantity = null;
+            }
+        }
+}

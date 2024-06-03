@@ -1,0 +1,67 @@
+﻿@inject ICartService CartService
+@implements IProductAddToCart
+
+<div class="card m-2 p-0" style="width: 200px">
+    <img class="card-img-top rounded" src="/images/@Product.ProductImage" alt="@Product.ProductName">
+    <div class="card-body">
+        <h3 class="card-title">
+            <a href="@Product.FullUrl">
+                @Product.ProductName
+            </a>
+        </h3>
+        <h4 class="card-title"><strong>Category:</strong> @Product.ProductCategory</h4>
+        <p class="card-text">@Product.ProductDescription</p>
+        <h4 class="card-title"><strong>Price:</strong> @Product.ProductPrice $</h4>
+        <div class="m-2">
+
+            <input type="number" @bind="Quantity" placeholder="How many?..." min="0" class="form-control" />
+
+             <button type="button" class="btn btn-outline-success m-1" @onclick="AddToCart">
+                @if (CartService.HasProduct(Product.SKU))
+                    {
+                    <span>
+                        Add
+                        @if (Quantity.HasValue)
+                            {
+                            <text> @Quantity </text>
+                            }
+                        else
+                            {
+                            <text>1</text>
+                            }
+                        more @Product.ProductName to Cart
+                    </span>
+                    }
+                else
+                    {
+                    <span>
+                        Add to Cart
+                    </span>
+                    }
+            </button>
+
+        </div>
+        <a href="#" class="btn btn-primary">Product Details</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ProductModel? Product { get; set; }
+
+    public int? Quantity { get; set; }
+
+
+}
+
+@functions
+{
+    public void AddToCart ()
+        {
+        if (Product != null)
+            {
+            CartService.AddProduct(Product, Quantity ?? 1);
+            Quantity = null;
+            }
+        }
+}

@@ -1,0 +1,15 @@
+﻿<nav class="navbar fixed-bottom navbar-light bg-light">
+    <a class="navbar-brand" href="#">CopyRight IPBSES @year</a>
+</nav>
+
+@code {
+    string year = "";
+}
+
+@functions
+{
+    protected override void OnInitialized ()
+        {
+        year = DateTime.Now.Year.ToString();
+        }
+}

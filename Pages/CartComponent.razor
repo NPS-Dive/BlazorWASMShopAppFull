@@ -1,0 +1,63 @@
+﻿@page "/cart"
+
+@inject ICartService CartService
+
+<PageTitle>Shopping Cart</PageTitle>
+
+<div class="row">
+    <table class="table table-bordered table-striped table-hover">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Picture</th>
+                <th>Product Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Sum</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        @foreach (var stuff in CartService.Get().CartItems)
+            {
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <img class="rounded"
+                             src="/images/@stuff.Product.ProductImage"
+                             alt="@stuff.Product.ProductName"
+                             width="100">
+                    </td>
+                    <td>@stuff.Product.ProductName</td>
+                    <td>@stuff.Product.ProductPrice</td>
+                    <td>@stuff.Quantity</td>
+                    <td>@stuff.TotalPrice</td>
+                    <td>
+                        <input type="button" class="btn btn-warning" value="Edit" />
+                        <input type="button" class="btn btn-danger" value="Delete" />
+                    </td>
+                </tr>
+            </tbody>
+            }
+        <tfoot>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th>Total Sum:</th>
+                <th> $</th>
+                <th></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+@code {
+
+}
+
+@functions {
+
+}
